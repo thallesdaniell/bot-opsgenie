@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    alert_group: pope
+    app_group: job
+    app_name: cron-opslink
+    app_project: cron-opslink
+    team: pope
+    version: production
+  name: cron-opslink
+  namespace: pope
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            alert_group: pope
+            app_group: job
+            app_name: cron-opslink
+            app_project: cron-opslink
+            team: pope
+            version: production
+        spec:
+          containers:
+            - envFrom:
+                - secretRef:
+                    name: opslink-secret
+              image: 'gcr.io/rd-devops/opslink:1.0.0'
+              imagePullPolicy: IfNotPresent
+              name: cron-opslink
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+              volumeMounts:
+                - mountPath: /sa
+                  name: secrets
+                  readOnly: true
+          restartPolicy: Never
+          volumes:
+            - name: secrets
+              secret:
+                defaultMode: 420
+                secretName: opslink-secret
+  schedule: '*/10 * * * *'

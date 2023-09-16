@@ -1,0 +1,11 @@
+
+version: '3.0'
+services:
+  opslink:
+    build: .
+    env_file: 
+      - '.env.example'
+    working_dir: /app
+    entrypoint: bash
+    volumes:
+      - .:/app
